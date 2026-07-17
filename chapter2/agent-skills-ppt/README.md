@@ -1,0 +1,109 @@
+# 实验 2-6：使用 Agent Skills 从论文生成演示文稿
+
+配套《深入理解 AI Agent》第二章「动态提示词与 Agent Skills」一节的实验 2-6（★★）。
+
+## 目的
+
+验证书中的核心命题：**Agent 通过「渐进式披露（Progressive Disclosure）」按需加载
+专业领域 Skill，即可完成复杂任务，而无需把所有知识一次性塞进系统提示词。**
+
+本 demo 让一个 Agent 从一篇（自带的）精简论文生成一份 8-12 页的 PowerPoint。
+Agent 启动时**只看到一份薄 Skill 目录**，当它识别出任务需要 `pptx` Skill 后，
+才逐层加载该 Skill 的完整流程、子文档与捆绑脚本，最后用 **python-pptx** 生成真实
+的 `.pptx` 文件。
+
+## 与 Anthropic PPTX Skill 的关系
+
+书中原实验跑在 **Claude Code + Anthropic 官方 PPTX Skill** 上。由于当前环境的
+Anthropic key 无效，本项目**自建了一套同构的 Skills 机制**来复现同样的思想，
+而非调用 Anthropic：
+
+| 维度 | Anthropic PPTX Skill（书中） | 本项目（自建同构版） |
+|------|------------------------------|----------------------|
+| 运行时 | Claude Code | Python + OpenAI SDK（`gpt-4o-mini`） |
+| 第一层·元数据 | 启动注入所有 Skill 的 name+description | `scan_skill_catalog()` 只读 frontmatter 拼进 system prompt |
+| 第二层·核心流程 | Skill 工具加载完整 `SKILL.md` | `read_skill` 工具加载 `skills/pptx/SKILL.md` |
+| 第三层·细则 | 引用 `html2pptx.md` / `reference.md` | `read_skill_file` 读 `reference.md` / 脚本源码 |
+| 捆绑脚本 | `scripts/thumbnail.py` 等 | `scripts/generate_pptx.py`（python-pptx 生成器） |
+
+机制一一对应，只是把「Claude 内置的 Skill 加载器」换成了几个显式的读取/执行工具，
+从而在没有 Anthropic 访问权限时，依然能真实演示渐进式披露的三层加载过程。
+
+> 说明：本项目不使用 OPENROUTER / ANTHROPIC / DEEPSEEK / SILICONFLOW 等已失效的
+> 供应商，只依赖 OpenAI。
+
+## 渐进式披露的三层结构
+
+```
+skills/
+└── pptx/
+    ├── SKILL.md              # 第一层：顶部 YAML frontmatter(name+description) —— 只有它进 system prompt
+    │                         # 第二层：正文核心流程 —— read_skill 时才加载
+    ├── reference.md          # 第三层：版式/配色/技术细则 —— read_skill_file 时才加载
+    └── scripts/
+        └── generate_pptx.py  # 捆绑可执行脚本 —— run_skill_script 时才执行
+```
+
+- **第一层（元数据）**：Agent 启动时，`system prompt` 里只有各 Skill 的
+  `name + description`（约数百 token）。此刻它并不知道怎么做 PPT。
+- **第二层（核心流程）**：Agent 判断任务需要 `pptx`，调用 `read_skill("pptx")`
+  把完整 `SKILL.md` 作为 tool result 载入上下文，得到页序规划与脚本调用约定。
+- **第三层（细则）**：如需实现/样式细节，Agent 再用
+  `read_skill_file("pptx", "reference.md")` 或读取脚本源码。
+- **执行**：Agent 组织好幻灯片大纲 JSON，通过 `run_skill_script` 调用捆绑的
+  `generate_pptx.py`，用 python-pptx 落地为 `output/presentation.pptx`。
+
+## 运行
+
+```bash
+pip install -r requirements.txt
+cp env.example .env        # 或直接 export
+export OPENAI_API_KEY=sk-...   # 默认模型 gpt-4o-mini，可用 OPENAI_MODEL 覆盖
+python demo.py
+```
+
+一条命令 `python demo.py` 即可跑通：真实调用 OpenAI，打印渐进式披露的每一步，
+生成 `output/presentation.pptx`，并用 python-pptx 重新打开该文件读回页数与每页标题
+作为校验。
+
+## 真实运行输出（节选）
+
+```
+【第一层·元数据】Agent 启动时只看到这份薄 Skill 目录（system prompt）：
+== 已安装的 Skills（薄目录，仅元数据）==
+- pptx: 从论文...生成 PowerPoint...Use when...Don't use when...
+
+[Agent 第 1 轮] 调用工具 -> read_skill(name=pptx)
+  >>> [渐进式披露·第二层] 加载完整 SKILL.md（1150 字符）
+[Agent 第 2 轮] 调用工具 -> read_skill_file(name=pptx, path=scripts/generate_pptx.py)
+  >>> [渐进式披露·第三层] 加载子文档（4270 字符）
+[Agent 第 3 轮] 调用工具 -> run_skill_script(name=pptx, script=generate_pptx.py, ...)
+  >>> 生成 presentation.pptx ...
+
+【校验】用 python-pptx 重新打开生成的文件，读回页数与每页标题：
+总页数: 9
+  第  1 页标题: 精简论文：渐进式披露式 Agent Skills 对上下文效率的影响
+  第  2 页标题: 目录
+  第  3 页标题: 研究背景与问题
+  第  4 页标题: 方法概述（总体思路）
+  ...
+  第  9 页标题: 小结
+校验通过：这是一个可被 python-pptx / PowerPoint 打开的有效 .pptx（9 页）。
+```
+
+（页数/标题由模型即时规划，每次运行可能略有差异，但均落在 8-12 页区间。）
+
+## 文件说明
+
+| 文件 | 作用 |
+|------|------|
+| `demo.py` | 主程序：扫描薄目录 → agentic loop → 渐进式披露 → 生成并校验 pptx |
+| `skills/pptx/SKILL.md` | pptx Skill：frontmatter（元数据）+ 核心流程 |
+| `skills/pptx/reference.md` | 第三层细则：版式/配色/python-pptx 技术点 |
+| `skills/pptx/scripts/generate_pptx.py` | 捆绑生成器，用 python-pptx 从大纲生成 .pptx |
+| `papers/sample_paper.md` | 自带的精简论文/大纲（输入） |
+| `output/presentation.pptx` | 生成的演示文稿（输出，运行后产生） |
+
+## 换一篇论文
+
+把 `papers/sample_paper.md` 替换为你自己的论文/大纲（markdown），再跑 `python demo.py` 即可。
