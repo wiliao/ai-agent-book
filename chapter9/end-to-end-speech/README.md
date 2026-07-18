@@ -35,7 +35,10 @@ pip install -r requirements.txt
 
 # 2. 配置 Key
 cp env.example .env
-# 编辑 .env，填入有效的 OPENAI_API_KEY（需有权访问 gpt-audio / whisper-1 / tts-1 / gpt-4o-mini）
+# 编辑 .env，填入有效的 OPENAI_API_KEY（需有权访问 gpt-audio / whisper-1 / tts-1）。
+# 音频端点（端到端 gpt-audio、级联 ASR/TTS）只有 OpenAI 直连才有——OpenRouter 无音频端点，
+# 故本实验必须用 OpenAI 直连 Key。可选：额外配 OPENROUTER_API_KEY，则级联中间的纯文本
+# LLM 思考自动改走 OpenRouter 的 gpt-5.6-luna（绕开 gpt-5.6* 直连的组织实名认证）。
 
 # 3. 运行（默认：math 任务，同题跑通端到端 + 级联，并打印真实延迟对照）
 python demo.py
@@ -76,7 +79,7 @@ CLI 全部参数见 `python demo.py --help`：`--task`、`--question`、`--audio
 
 范式二（对照基线）：级联流水线 ASR → LLM → TTS
 [阶段 1] ASR 语音识别  |  模型=whisper-1  |  延迟=1.35s
-[阶段 2] LLM 思考      |  模型=gpt-4o-mini  |  延迟=1.92s
+[阶段 2] LLM 思考      |  模型=gpt-5.6-luna  |  延迟=1.92s
 [阶段 3] TTS 语音合成  |  模型=tts-1  |  延迟=3.66s
 级联总延迟（各阶段串行相加）：6.94s
 
@@ -118,6 +121,6 @@ CLI 全部参数见 `python demo.py --help`：`--task`、`--question`、`--audio
 ## 文件
 
 - `demo.py`：可运行主程序（`python demo.py`），同题跑通端到端 + 级联并打印真实对照。
-- `speech_model.py`：`EndToEndSpeechModel`（gpt-audio / 可切 Step-Audio R1）与 `CascadedSpeechModel`（whisper-1 → gpt-4o-mini → tts-1）。
+- `speech_model.py`：`EndToEndSpeechModel`（gpt-audio / 可切 Step-Audio R1）与 `CascadedSpeechModel`（whisper-1 → gpt-5.6-luna → tts-1）。
 - `requirements.txt` / `env.example`：依赖与环境变量样例。
 - `audio/`：运行时生成的输入/输出音频（已在 `.gitignore` 中忽略）。

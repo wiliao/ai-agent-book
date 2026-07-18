@@ -31,23 +31,66 @@ from typing import Any
 
 from openai import OpenAI
 
-# 只使用 OPENAI_API_KEY（可选 OPENAI_BASE_URL 指向兼容网关）。
-_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+# 默认聊天模型：当前便宜旗舰。可用 OPENAI_MODEL 覆盖（如 Moonshot 的 kimi-k3）。
+_DEFAULT_MODEL = "gpt-5.6-luna"
 
-# 延迟创建 client：缺 OPENAI_API_KEY 时由 demo.py 给出友好提示，而非 import 期裸异常。
+
+def _map_openrouter_model(model: str) -> str:
+    """把常见模型名映射为 OpenRouter 的 provider/model 形式。"""
+    if "/" in model:            # 已是 provider/model，原样透传
+        return model
+    if model.startswith("gpt-"):
+        return "openai/" + model
+    if model.startswith("claude-"):
+        return "anthropic/claude-opus-4.8"
+    return "openai/gpt-5.6-luna"
+
+
+# 延迟创建 client：缺 Key 时由 demo.py 给出友好提示，而非 import 期裸异常。
+# 通用回退：优先 OPENAI_API_KEY（可选 OPENAI_BASE_URL 指向兼容网关，如 Moonshot），
+# 否则用 OPENROUTER_API_KEY 走 OpenRouter，否则给出清晰错误。
 # timeout + 自动重试，避免单次网络/SSL 抖动让整段模拟通话崩溃。
 _client = None
+_active_model = None
 
 
-def _get_client() -> OpenAI:
-    global _client
-    if _client is None:
+def _resolve() -> tuple[OpenAI, str]:
+    global _client, _active_model
+    if _client is not None:
+        return _client, _active_model
+    model = os.getenv("OPENAI_MODEL") or _DEFAULT_MODEL
+    if os.getenv("OPENAI_API_KEY"):
+        # 直连 OpenAI（或 OPENAI_BASE_URL 指定的兼容网关，如 Moonshot kimi-k3）。
         _client = OpenAI(
             base_url=os.getenv("OPENAI_BASE_URL") or None,
             timeout=60.0,
             max_retries=3,
         )
-    return _client
+        _active_model = model
+    elif os.getenv("OPENROUTER_API_KEY"):
+        # 回退到 OpenRouter：注意 gpt-5.6* 直连 OpenAI 需组织实名认证，走 OpenRouter 免此步。
+        _client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+            timeout=60.0,
+            max_retries=3,
+        )
+        _active_model = _map_openrouter_model(model)
+    else:
+        raise RuntimeError(
+            "未检测到 OPENAI_API_KEY 或 OPENROUTER_API_KEY。请在 .env / 环境变量中至少配置其一"
+            "（见 env.example），或用 python demo.py --dry-run 走完全离线的脚本演示。"
+        )
+    return _client, _active_model
+
+
+def _get_client() -> OpenAI:
+    return _resolve()[0]
+
+
+def default_model() -> str:
+    """当前生效的聊天模型名（已按 OpenRouter 映射解析）。"""
+    return _resolve()[1]
 
 # 一次模拟通话里「去电语音 Agent ↔ 被叫方」最多来回的轮数（一轮 = 双方各说一次）。
 _MAX_TURNS = 8
@@ -86,7 +129,7 @@ def _chat(
     model: str | None = None,
 ) -> str:
     resp = _get_client().chat.completions.create(
-        model=model or _MODEL,
+        model=model or default_model(),
         messages=messages,
         temperature=temperature,
     )

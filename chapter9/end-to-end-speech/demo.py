@@ -239,6 +239,34 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
+def _map_openrouter_model(model: str) -> str:
+    """把常见模型名映射为 OpenRouter 的 provider/model 形式。"""
+    if "/" in model:
+        return model
+    if model.startswith("gpt-"):
+        return "openai/" + model
+    if model.startswith("claude-"):
+        return "anthropic/claude-opus-4.8"
+    return "openai/gpt-5.6-luna"
+
+
+def _resolve_llm_client(openai_client: OpenAI):
+    """为级联的纯文本 LLM 思考选路：优先 OpenRouter，否则回落到 OpenAI 直连。
+
+    返回 (client, model, route_label)。ASR/TTS/端到端音频仍固定用 openai_client。
+    """
+    model = os.getenv("LLM_MODEL") or os.getenv("OPENAI_MODEL") or "gpt-5.6-luna"
+    if os.getenv("OPENROUTER_API_KEY"):
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+            timeout=120.0,
+            max_retries=3,
+        )
+        return client, _map_openrouter_model(model), "OpenRouter"
+    return openai_client, model, "OpenAI 直连"
+
+
 def main() -> int:
     args = parse_args()
     task = args.task
@@ -249,12 +277,18 @@ def main() -> int:
 
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        print("错误：未配置 OPENAI_API_KEY。请复制 env.example 为 .env 并填入有效的 "
-              "OpenAI Key。", file=sys.stderr)
+        print("错误：未配置 OPENAI_API_KEY。端到端 gpt-audio 与级联的 ASR(whisper)/TTS(tts-1) "
+              "都是音频端点，只有 OpenAI 直连才有——OpenRouter 无音频端点，故本实验必须提供"
+              " OpenAI 直连 Key。请复制 env.example 为 .env 并填入。", file=sys.stderr)
         return 1
 
+    # 音频客户端：端到端 gpt-audio、级联的 whisper/tts 都必须走 OpenAI 直连。
     # timeout + 自动重试：单次网络/SSL 抖动不至于让整条流水线崩溃
     client = OpenAI(api_key=api_key, timeout=120.0, max_retries=3)
+
+    # 级联中间的纯文本 LLM 思考：优先走 OpenRouter（绕开 gpt-5.6* 直连的组织实名认证），
+    # 没有 OPENROUTER_API_KEY 时回落到上面的 OpenAI 直连客户端。
+    llm_client, llm_model, llm_route = _resolve_llm_client(client)
     out_dir = Path(args.output_dir) if args.output_dir else AUDIO_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
     e2e_audio = str(out_dir / "answer_end_to_end.wav")
@@ -307,10 +341,14 @@ def main() -> int:
     # -- 步骤 3：级联流水线（对照基线） ---------------------------------------
     cascade_result = None
     if not args.skip_cascade:
+        print(f"\n级联 LLM 思考路由：{llm_route}（模型 {llm_model}）；"
+              f"ASR/TTS 仍走 OpenAI 直连。")
         cascaded = CascadedSpeechModel(
             client,
+            llm_model=llm_model,
             tts_voice=args.voice,
             system_prompt=task_cfg["cascade_prompt"],
+            llm_client=llm_client,
         )
         cascade_result = cascaded.run(question_audio, cascade_audio)
         print_cascade_result(cascade_result)

@@ -14,30 +14,11 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 from typing import Any, Callable
 
-from openai import OpenAI
-
-from pine_voice import make_phone_call
-
-_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-
-# 延迟创建 client：缺 OPENAI_API_KEY 时由 demo.py 给出友好提示，而非 import 期裸异常。
-# timeout + 自动重试，避免单次网络/SSL 抖动让整轮 ReAct 崩溃。
-_client = None
-
-
-def _get_client() -> OpenAI:
-    global _client
-    if _client is None:
-        _client = OpenAI(
-            base_url=os.getenv("OPENAI_BASE_URL") or None,
-            timeout=60.0,
-            max_retries=3,
-        )
-    return _client
+# 复用 pine_voice 里的统一 client/模型解析（OPENAI_API_KEY 直连，缺失则回退 OpenRouter）。
+from pine_voice import make_phone_call, _get_client, default_model
 
 # 最多允许 Agent 发起几次工具调用（含追问/再拨），防止死循环。
 _MAX_STEPS = 6
@@ -125,7 +106,7 @@ def run_agent(
     if dry_run:
         return _run_agent_dryrun(task, emit, phone_hint, goal_hint)
 
-    model = model or _MODEL
+    model = model or default_model()
 
     # 若显式给了号码/目标，就作为「已知信息」拼进用户消息，Agent 仍自行决定如何使用。
     hints = []

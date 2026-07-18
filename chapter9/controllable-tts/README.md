@@ -26,8 +26,9 @@
 - 若首选模型不可用，代码**自动兜底到 `tts-1`**：不支持 instructions，改用多 voice +
   `speed` 参数 + 文本级停顿近似。
 
-只使用 `OPENAI_API_KEY`。请勿使用 OPENROUTER / ANTHROPIC / DEEPSEEK / SILICONFLOW
-（本环境失效）。
+**必须用 OpenAI 直连 Key**：本实验只用 TTS 语音合成端点（`gpt-4o-mini-tts` / `tts-1`），
+这类音频端点只有 OpenAI 直连才有——OpenRouter 只做聊天补全、无音频合成端点，故无法回退到
+`OPENROUTER_API_KEY`。离线查看语音库/标记映射（`--list-voices` / `--dump-mapping`）则无需任何 Key。
 
 > 局限：OpenAI TTS 无法像 Fish Audio 那样**原生生成**笑声/叹气等非语言音。本项目对
 > `<laugh>` / `[SIGH]` 用「匹配情绪的拟声词」（如“哈哈，”“唉——”）近似，`[PAUSE]`/

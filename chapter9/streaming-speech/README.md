@@ -23,7 +23,9 @@
   因此「按递增前缀切块、逐块识别」正好复现书中所述「模拟流式」的机制与代价。
 - 测试音频用 **OpenAI TTS（`tts-1`）** 现场合成，句子含时间信息「两点半」，前半句被截断
   时容易识别不全 / 出错。
-- **请勿使用 OPENROUTER / ANTHROPIC / DEEPSEEK / SILICONFLOW 的 Key（当前不可用）。**
+- **必须用 OpenAI 直连 Key**：本实验只用音频端点（ASR `whisper-1` / TTS `tts-1`），
+  这类端点只有 OpenAI 直连才有——OpenRouter 只做聊天补全、无音频端点，故无法回退到
+  `OPENROUTER_API_KEY`。若只想验证分块/计时逻辑，用 `python demo.py --offline` 即可，无需任何 Key。
 
 与真正的流式模型（如采用分块/因果编码器的 Qwen3-Omni）相比，本 demo 的延迟数字只反映
 「分块粒度 + 每块从头识别」的开销，并不等于真流式的首包延迟；这一点书中也已说明。

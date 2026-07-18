@@ -195,20 +195,26 @@ class CascadedSpeechModel:
 
     默认使用 OpenAI：
       - ASR：whisper-1        （语音 → 文本）
-      - LLM：gpt-4o-mini      （文本思考 → 文本回答）
+      - LLM：gpt-5.6-luna     （文本思考 → 文本回答）
       - TTS：tts-1            （文本 → 语音）
+
+    ASR/TTS 只有 OpenAI 直连才有对应端点（OpenRouter 无音频端点），因此固定用 `client`
+    （必须是直连 OpenAI）；中间的纯文本 LLM 思考可用单独的 `llm_client` 走 OpenRouter，
+    从而绕开 gpt-5.6* 直连所需的组织实名认证。`llm_client` 缺省时回落到 `client`。
     """
 
     def __init__(
         self,
         client: OpenAI,
         asr_model: str = "whisper-1",
-        llm_model: str = "gpt-4o-mini",
+        llm_model: str = "gpt-5.6-luna",
         tts_model: str = "tts-1",
         tts_voice: str = "alloy",
         system_prompt: Optional[str] = None,
+        llm_client: Optional[OpenAI] = None,
     ) -> None:
         self.client = client
+        self.llm_client = llm_client or client
         self.asr_model = asr_model
         self.llm_model = llm_model
         self.tts_model = tts_model
@@ -237,7 +243,7 @@ class CascadedSpeechModel:
     # -- 阶段 2：LLM 思考 ----------------------------------------------------
     def think(self, question_text: str) -> StageResult:
         t0 = time.perf_counter()
-        resp = self.client.chat.completions.create(
+        resp = self.llm_client.chat.completions.create(
             model=self.llm_model,
             messages=[
                 {"role": "system", "content": self.system_prompt},

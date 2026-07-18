@@ -89,9 +89,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    if not args.dry_run and not os.getenv("OPENAI_API_KEY"):
-        print("错误：未检测到 OPENAI_API_KEY。请复制 env.example 为 .env 并填入有效 key，"
-              "或改用 python demo.py --dry-run 走完全离线的脚本演示。")
+    if not args.dry_run and not (os.getenv("OPENAI_API_KEY") or os.getenv("OPENROUTER_API_KEY")):
+        print("错误：未检测到 OPENAI_API_KEY 或 OPENROUTER_API_KEY。请复制 env.example 为 .env "
+              "并至少填入其一，或改用 python demo.py --dry-run 走完全离线的脚本演示。")
         sys.exit(1)
 
     # 书中示例任务：注意这里只给了自然语言任务，Agent 需自行决定通话参数。

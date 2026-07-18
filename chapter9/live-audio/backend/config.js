@@ -7,10 +7,10 @@ const config = {
   SILICONFLOW_API_KEY: process.env.SILICONFLOW_API_KEY || 'your-siliconflow-api-key-here',
   
   // Provider Selection
-  ASR_PROVIDER: 'siliconflow', // 'openai' or 'siliconflow'
-  LLM_PROVIDER: 'ark', // 'openai', 'openrouter-gpt4o', 'openrouter-gemini', 'ark'
-  TTS_PROVIDER: 'siliconflow', // 'siliconflow' (keep current)
-  
+  ASR_PROVIDER: 'siliconflow', // 'openai' (whisper-1) or 'siliconflow' (SenseVoice)
+  LLM_PROVIDER: 'openrouter', // 'openrouter' (gpt-5.6-luna, default), 'openai', 'openrouter-gemini', 'ark'
+  TTS_PROVIDER: 'siliconflow', // 'siliconflow' (CosyVoice2, keep current)
+
   // ASR Configuration
   ASR_PROVIDERS: {
     openai: {
@@ -27,9 +27,16 @@ const config = {
   
   // LLM Configuration
   LLM_PROVIDERS: {
+    // OpenRouter with a current cheap flagship chat model (default / recommended:
+    // gpt-5.6* on OpenAI direct needs org verification, OpenRouter avoids that step).
+    openrouter: {
+      apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
+      model: 'openai/gpt-5.6-luna',
+      apiKey: 'OPENROUTER_API_KEY'
+    },
     openai: {
       apiUrl: 'https://api.openai.com/v1/chat/completions',
-      model: 'gpt-4o',
+      model: 'gpt-5.6-luna',
       apiKey: 'OPENAI_API_KEY'
     },
     'openrouter-gpt4o': {
@@ -60,7 +67,7 @@ const config = {
   },
   
   // Legacy support (will be deprecated)
-  LLM_MODEL: 'gpt-4o',
+  LLM_MODEL: 'gpt-5.6-luna',
   LLM_API_URL: 'https://api.openai.com/v1/chat/completions',
   STT_API_URL: 'https://api.openai.com/v1/audio/transcriptions',
   STT_MODEL: 'whisper-1',

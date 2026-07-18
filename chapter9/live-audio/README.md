@@ -185,8 +185,8 @@ export ANTHROPIC_API_KEY="your-anthropic-api-key"
    ```javascript
    const config = {
      // Provider Selection - Choose your preferred providers
-     ASR_PROVIDER: 'siliconflow',      // 'openai' or 'siliconflow'
-     LLM_PROVIDER: 'ark',              // 'openai', 'openrouter-gpt4o', 'openrouter-gemini', 'ark'
+     ASR_PROVIDER: 'siliconflow',      // 'openai' (whisper-1) or 'siliconflow' (SenseVoice)
+     LLM_PROVIDER: 'openrouter',       // 'openrouter' (gpt-5.6-luna, default), 'openai', 'openrouter-gemini', 'ark'
      TTS_PROVIDER: 'siliconflow',      // 'siliconflow' (CosyVoice2)
      
      // API Keys (loaded from environment variables)
@@ -201,24 +201,24 @@ export ANTHROPIC_API_KEY="your-anthropic-api-key"
 
 ### 3. Recommended Provider Combinations
 
-#### For Real-time Performance (Low Latency in China)
+#### Default / Recommended (works anywhere with an OpenRouter key)
 ```javascript
-ASR_PROVIDER: 'siliconflow',      // 'openai' or 'siliconflow'
-LLM_PROVIDER: 'ark',              // 'openai', 'openrouter-gpt4o', 'openrouter-gemini', 'ark'
-TTS_PROVIDER: 'siliconflow',      // 'siliconflow' (CosyVoice2)
+ASR_PROVIDER: 'siliconflow',      // SenseVoice
+LLM_PROVIDER: 'openrouter',       // openai/gpt-5.6-luna via OpenRouter (avoids gpt-5.6* org verification)
+TTS_PROVIDER: 'siliconflow',      // CosyVoice2
 ```
 
-#### For Real-time Performance (Low Latency in US)
+#### For Real-time Performance (Low Latency in China)
 ```javascript
-ASR_PROVIDER: 'openai',            // 'openai' or 'siliconflow'
-LLM_PROVIDER: 'openrouter-gemini', // 'openai', 'openrouter-gpt4o', 'openrouter-gemini', 'ark'
-TTS_PROVIDER: 'siliconflow',       // 'siliconflow' (CosyVoice2)
+ASR_PROVIDER: 'siliconflow',      // SenseVoice
+LLM_PROVIDER: 'ark',              // Doubao (fast in China); or 'openrouter' for gpt-5.6-luna
+TTS_PROVIDER: 'siliconflow',      // CosyVoice2
 ```
 
 #### For Best Accuracy
 ```javascript
 ASR_PROVIDER: 'openai',           // Accurate Whisper
-LLM_PROVIDER: 'openrouter-gpt4o', // High-quality GPT-4o
+LLM_PROVIDER: 'openrouter',       // openai/gpt-5.6-luna via OpenRouter
 TTS_PROVIDER: 'siliconflow'       // CosyVoice2
 ```
 
@@ -228,8 +228,8 @@ You only need the API keys for the providers you plan to use:
 
 | Provider | ASR | LLM | TTS | Required API Key |
 |----------|-----|-----|-----|------------------|
-| OpenAI | ✅ Whisper | ✅ GPT-4o | ❌ | `OPENAI_API_KEY` |
-| OpenRouter | ❌ | ✅ GPT-4o, Gemini | ❌ | `OPENROUTER_API_KEY` |
+| OpenAI | ✅ Whisper | ✅ gpt-5.6-luna | ❌ | `OPENAI_API_KEY` |
+| OpenRouter | ❌ | ✅ gpt-5.6-luna, Gemini | ❌ | `OPENROUTER_API_KEY` |
 | ARK (Doubao) | ❌ | ✅ Doubao | ❌ | `ARK_API_KEY` |
 | Siliconflow | ✅ SenseVoice | ❌ | ✅ CosyVoice2 | `SILICONFLOW_API_KEY` |
 
