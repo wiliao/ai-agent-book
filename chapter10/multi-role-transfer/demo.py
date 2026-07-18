@@ -10,7 +10,7 @@ demo.py —— 实验 10-2 演示入口：多角色转换 / transfer_to_agent
     python demo.py --task "..."              # 自定义任务
     python demo.py --role research            # 指定起始角色（默认 triage 前台分诊）
     python demo.py --interactive             # 交互式多轮对话（角色与共享历史跨轮保留）
-    python demo.py --model gpt-4o --max-steps 30
+    python demo.py --model gpt-5.6-luna --max-steps 30
 
 演示一个需要【多次跨领域切换】的复合任务，预期出现
     triage → research → data_analysis → writing

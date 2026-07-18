@@ -4,7 +4,7 @@
   python demo.py                       # 完整跑：管理者模式 + 单 Agent 对照
   python demo.py --help                # 查看全部参数
   python demo.py --dry-run             # 离线：只画四 Agent 协作图 + token 预算，不调 API
-  python demo.py --model gpt-4o        # 换用更强的模型
+  python demo.py --model gpt-5.6-luna        # 换用更强的模型
   python demo.py --skip-single         # 只跑管理者模式，跳过单 Agent 对照（更快）
   python demo.py --no-proofreading     # 关闭审校 Agent 与修订闭环
   python demo.py --source-lang 英文 --target-lang 日文     # 换翻译方向
@@ -51,7 +51,7 @@ def parse_args():
             "  python demo.py --dry-run                 # 离线画 Agent 图 + token 预算，不调 API\n"
             "  python demo.py --skip-single             # 只跑管理者模式\n"
             "  python demo.py --no-proofreading         # 关闭审校 Agent 与修订闭环\n"
-            "  python demo.py --sample-dir book --out-dir out --model gpt-4o\n"
+            "  python demo.py --sample-dir book --out-dir out --model gpt-5.6-luna\n"
         ),
     )
     io = parser.add_argument_group("输入 / 输出")

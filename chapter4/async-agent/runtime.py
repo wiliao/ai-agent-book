@@ -117,7 +117,7 @@ class AgentRuntime:
                  completion_params: Optional[dict] = None):
         self.client = client
         self.model = model
-        # 传给 chat.completions.create 的采样参数。默认 temperature=0.2 适合 gpt-4o-mini；
+        # 传给 chat.completions.create 的采样参数。默认 temperature=0.2 适合 gpt-5.6-luna；
         # 推理模型（如 Moonshot kimi-k3）需要 temperature=1 且 max_tokens>=2048，由 make_client 传入。
         self.completion_params = completion_params or {"temperature": 0.2}
         self._t0 = start_time or time.time()

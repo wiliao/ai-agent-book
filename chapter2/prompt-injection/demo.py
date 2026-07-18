@@ -7,7 +7,7 @@
 命令行用法（详见 --help）：
     python demo.py                       # 默认：全部 3x4 组合，每组合 4 次试验
     python demo.py --trials 5            # 每个组合跑 5 次
-    python demo.py --model gpt-4o        # 换模型
+    python demo.py --model gpt-5.6-luna        # 换模型
     python demo.py --attack 2,3          # 只跑第 2、3 个攻击场景
     python demo.py --defense 1,4         # 只跑 D1 和 D4 两种防御
     python demo.py --output result.json  # 额外把结果矩阵保存为 JSON
@@ -210,7 +210,7 @@ def build_parser() -> argparse.ArgumentParser:
         epilog=(
             "示例：\n"
             "  python demo.py                       # 全部组合，每组合 4 次\n"
-            "  python demo.py -n 5 -m gpt-4o        # 换模型并跑 5 次\n"
+            "  python demo.py -n 5 -m gpt-5.6-luna        # 换模型并跑 5 次\n"
             "  python demo.py -a 2,3 -d 1,4         # 只跑攻击2/3 x 防御D1/D4\n"
             "  python demo.py -o result.json        # 额外保存 JSON 结果\n"
             "  python demo.py --list                # 离线列出攻击/防御，不调用 API\n"

@@ -50,7 +50,7 @@ check_prerequisites() {
         cat > .env << EOF
 # LLM Configuration
 LLM_PROVIDER=openai
-LLM_MODEL_NAME=gpt-4o
+LLM_MODEL_NAME=gpt-5.6-luna
 LLM_API_KEY=your_api_key_here
 # LLM_BASE_URL=https://api.openai.com/v1
 

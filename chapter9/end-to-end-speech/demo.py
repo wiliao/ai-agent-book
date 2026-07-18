@@ -4,14 +4,14 @@
 书中实验 9-4 的核心是端到端语音思考模型 Step-Audio R1（直接「听→想→说」）。
 Step-Audio R1 需多卡 GPU 部署、无公开 endpoint，本 demo 因此用 OpenAI 的
 speech-to-speech 模型 `gpt-audio` 作为**真实可跑的端到端代表**（音频进、单模型、
-音频出，无独立 ASR/LLM/TTS 三段），与**级联基线**（whisper-1 → gpt-4o-mini → tts-1）
+音频出，无独立 ASR/LLM/TTS 三段），与**级联基线**（whisper-1 → gpt-5.6-luna → tts-1）
 同题对照，两条路的延迟都是真实测得、两段输出音频都用 ffprobe 校验。
 
 流程：
   1. 用 TTS 合成一段「用户提问」的语音（一道需要多步推理的数学题，Spoken-MQA 风格），
      作为两条管道共同的输入；
   2. 端到端：一次 gpt-audio 调用，音频进 → 语音答案 + 转写出（单模型融合）；
-  3. 级联：whisper-1 转写 → gpt-4o-mini 思考 → tts-1 合成回答语音（三段串行）；
+  3. 级联：whisper-1 转写 → gpt-5.6-luna 思考 → tts-1 合成回答语音（三段串行）；
   4. 打印两条路的真实延迟对照，并用 ffprobe 确认两段输出音频真实生成；
   5. 给出端到端 vs 级联的范式对照（延迟、副语言信息损失），并引用书中表 9-1。
 """
@@ -203,7 +203,7 @@ def parse_args() -> argparse.Namespace:
         prog="demo.py",
         description="实验 9-4：端到端语音思考 vs 级联流水线。合成（或读取）一段「用户"
                     "提问」语音，同题跑通端到端（gpt-audio，可切 Step-Audio R1）与级联"
-                    "（whisper-1 → gpt-4o-mini → tts-1），打印真实延迟与信息损失对照。",
+                    "（whisper-1 → gpt-5.6-luna → tts-1），打印真实延迟与信息损失对照。",
         epilog="示例：\n"
                "  python demo.py                               # 默认：数学题，端到端+级联对照\n"
                "  python demo.py --task paralinguistic         # 副语言任务：凸显端到端优势\n"

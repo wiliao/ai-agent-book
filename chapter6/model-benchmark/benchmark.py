@@ -58,7 +58,7 @@ def _to_openrouter_model(model: str) -> str:
 class ProviderConfig:
     """单个待测 (提供商, 模型) 配置。"""
 
-    name: str                 # 展示名，例如 "OpenAI/gpt-4o-mini"
+    name: str                 # 展示名，例如 "OpenAI/gpt-5.6-luna"
     model: str                # 传给 API 的模型名
     api_key_env: str          # 读取 API key 的环境变量名
     base_url: Optional[str] = None  # OpenAI 官方留空；其它填各自 base_url
@@ -105,16 +105,6 @@ DEFAULT_PROVIDERS: list[ProviderConfig] = [
     ProviderConfig(
         name="OpenAI/gpt-5.6-luna",
         model="gpt-5.6-luna",
-        api_key_env="OPENAI_API_KEY",
-    ),
-    ProviderConfig(
-        name="OpenAI/gpt-4o-mini",
-        model="gpt-4o-mini",
-        api_key_env="OPENAI_API_KEY",
-    ),
-    ProviderConfig(
-        name="OpenAI/gpt-4o",
-        model="gpt-4o",
         api_key_env="OPENAI_API_KEY",
     ),
     # 月之暗面 Kimi（OpenAI 兼容）

@@ -39,14 +39,14 @@ const config = {
       model: 'gpt-5.6-luna',
       apiKey: 'OPENAI_API_KEY'
     },
-    'openrouter-gpt4o': {
+    'openrouter-gpt': {
       apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
-      model: 'openai/gpt-4o',
+      model: 'openai/gpt-5.6-luna',
       apiKey: 'OPENROUTER_API_KEY'
     },
     'openrouter-gemini': {
       apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
-      model: 'google/gemini-2.5-flash',
+      model: 'google/gemini-3.5-flash',
       apiKey: 'OPENROUTER_API_KEY'
     },
     ark: {

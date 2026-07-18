@@ -36,7 +36,7 @@ def parse_args() -> argparse.Namespace:
             "  python demo.py --list-stages          离线查看三阶段配置（无需 API Key）\n"
             "  python demo.py --start-stage implementation   跳过需求澄清，从实现阶段起步\n"
             "  python demo.py --interactive          需求澄清阶段由你本人回答提问\n"
-            "  python demo.py --model gpt-4o --task '写一个批量重命名图片的脚本'"
+            "  python demo.py --model gpt-5.6-luna --task '写一个批量重命名图片的脚本'"
         ),
     )
     parser.add_argument(

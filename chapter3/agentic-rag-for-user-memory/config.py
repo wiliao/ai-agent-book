@@ -25,7 +25,7 @@ def _openrouter_model_id(model: Optional[str]) -> str:
     if not m:
         return "openai/gpt-5.6-luna"
     if "/" in m:
-        return m  # already an OpenRouter-style id (e.g. openai/gpt-4o)
+        return m  # already an OpenRouter-style id (e.g. openai/gpt-5.6-luna)
     ml = m.lower()
     if ml.startswith(("gpt-", "o1", "o3", "o4", "chatgpt")):
         return "openai/" + m
@@ -95,11 +95,11 @@ class LLMConfig:
             "base_url": "https://api.moonshot.cn/v1"
         },
         "openrouter": {
-            "model": "openai/gpt-4o-2024-11-20",
+            "model": "openai/gpt-5.6-luna",
             "base_url": "https://openrouter.ai/api/v1"
         },
         "openai": {
-            "model": "gpt-4o-2024-11-20",
+            "model": "gpt-5.6-luna",
             "base_url": "https://api.openai.com/v1"
         },
         "groq": {
@@ -127,7 +127,7 @@ class LLMConfig:
             api_key = os.getenv("KIMI_API_KEY")  # Fallback for moonshot
 
         # Determine model
-        model = self.model or defaults.get("model", "gpt-4o")
+        model = self.model or defaults.get("model", "gpt-5.6-luna")
 
         # Universal OpenRouter fallback: primary provider key absent but
         # OPENROUTER_API_KEY present -> route through OpenRouter.

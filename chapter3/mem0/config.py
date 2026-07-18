@@ -28,7 +28,7 @@ def _openrouter_model_id(model) -> str:
     if not m:
         return "openai/gpt-5.6-luna"
     if "/" in m:
-        return m  # already an OpenRouter-style id (e.g. openai/gpt-4o)
+        return m  # already an OpenRouter-style id (e.g. openai/gpt-5.6-luna)
     ml = m.lower()
     if ml.startswith(("gpt-", "o1", "o3", "o4", "chatgpt")):
         return "openai/" + m

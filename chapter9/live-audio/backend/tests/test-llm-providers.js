@@ -13,17 +13,17 @@ const testConfig = {
   LLM_PROVIDERS: {
     openai: {
       apiUrl: 'https://api.openai.com/v1/chat/completions',
-      model: 'gpt-4o',
+      model: 'gpt-5.6-luna',
       apiKey: 'OPENAI_API_KEY'
     },
-    'openrouter-gpt4o': {
+    'openrouter-gpt': {
       apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
-      model: 'openai/gpt-4o',
+      model: 'openai/gpt-5.6-luna',
       apiKey: 'OPENROUTER_API_KEY'
     },
     'openrouter-gemini': {
       apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
-      model: 'google/gemini-2.5-flash',
+      model: 'google/gemini-3.5-flash',
       apiKey: 'OPENROUTER_API_KEY'
     },
     ark: {
@@ -144,7 +144,7 @@ describe('LLM Providers - Individual Testing', function() {
     
     it('should initialize with correct configuration', function() {
       assert(provider, 'Provider should be created');
-      assert.strictEqual(provider.config.model, 'gpt-4o', 'Should use gpt-4o model');
+      assert.strictEqual(provider.config.model, 'gpt-5.6-luna', 'Should use gpt-5.6-luna model');
       assert.strictEqual(provider.config.apiUrl, 'https://api.openai.com/v1/chat/completions', 'Should use correct API URL');
       assert(provider.apiKey, 'Should have API key');
       console.log('📋 OpenAI LLM Config:', {
@@ -246,37 +246,37 @@ describe('LLM Providers - Individual Testing', function() {
     });
   });
   
-  describe('OpenRouter GPT-4o LLM Provider', function() {
+  describe('OpenRouter GPT LLM Provider', function() {
     let provider;
     
     before(function() {
       if (!testConfig.OPENROUTER_API_KEY) {
-        console.log('⚠️  Skipping OpenRouter GPT-4o tests - OPENROUTER_API_KEY not found');
+        console.log('⚠️  Skipping OpenRouter GPT tests - OPENROUTER_API_KEY not found');
         this.skip();
       }
       
       try {
-        provider = LLMProviderFactory.createProvider('openrouter-gpt4o', testConfig, testConfig);
-        console.log('✅ OpenRouter GPT-4o Provider created successfully');
+        provider = LLMProviderFactory.createProvider('openrouter-gpt', testConfig, testConfig);
+        console.log('✅ OpenRouter GPT Provider created successfully');
       } catch (error) {
-        console.error('❌ Failed to create OpenRouter GPT-4o provider:', error);
+        console.error('❌ Failed to create OpenRouter GPT provider:', error);
         this.skip();
       }
     });
     
     it('should initialize with correct configuration', function() {
       assert(provider, 'Provider should be created');
-      assert.strictEqual(provider.config.model, 'openai/gpt-4o', 'Should use openai/gpt-4o model');
+      assert.strictEqual(provider.config.model, 'openai/gpt-5.6-luna', 'Should use openai/gpt-5.6-luna model');
       assert.strictEqual(provider.config.apiUrl, 'https://openrouter.ai/api/v1/chat/completions', 'Should use OpenRouter API URL');
       assert(provider.apiKey, 'Should have API key');
-      console.log('📋 OpenRouter GPT-4o Config:', {
+      console.log('📋 OpenRouter GPT Config:', {
         model: provider.config.model,
         apiUrl: provider.config.apiUrl
       });
     });
     
     it('should generate chat completion via OpenRouter', async function() {
-      console.log('🤖 Testing OpenRouter GPT-4o');
+      console.log('🤖 Testing OpenRouter GPT');
       
       const startTime = Date.now();
       const result = await provider.createChatCompletion(testMessages.simple, {
@@ -284,7 +284,7 @@ describe('LLM Providers - Individual Testing', function() {
       });
       const responseTime = Date.now() - startTime;
       
-      console.log('📊 OpenRouter GPT-4o Test:', {
+      console.log('📊 OpenRouter GPT Test:', {
         success: result.success,
         responseTime: `${responseTime}ms`,
         provider: result.provider
@@ -295,14 +295,14 @@ describe('LLM Providers - Individual Testing', function() {
       assert.strictEqual(result.provider, 'openrouter', 'Should identify as openrouter provider');
       
       if (result.success) {
-        console.log('✅ OpenRouter GPT-4o completion successful');
+        console.log('✅ OpenRouter GPT completion successful');
       } else {
-        console.log('❌ OpenRouter GPT-4o completion failed:', result.error);
+        console.log('❌ OpenRouter GPT completion failed:', result.error);
       }
     });
     
     it('should handle streaming via OpenRouter', async function() {
-      console.log('🌊 Testing OpenRouter GPT-4o streaming');
+      console.log('🌊 Testing OpenRouter GPT streaming');
       
       const result = await provider.createChatCompletion(testMessages.simple, {
         max_tokens: 50,
@@ -310,24 +310,24 @@ describe('LLM Providers - Individual Testing', function() {
       });
       
       if (!result.success) {
-        console.log('❌ OpenRouter GPT-4o streaming setup failed:', result.error);
+        console.log('❌ OpenRouter GPT streaming setup failed:', result.error);
         return; // Don't fail the test, just log
       }
       
       try {
         const streamResult = await collectStreamingResponse(result.response);
         
-        console.log('📊 OpenRouter GPT-4o Streaming:', {
+        console.log('📊 OpenRouter GPT Streaming:', {
           success: streamResult.success,
           tokenCount: streamResult.tokenCount,
           contentLength: streamResult.content.length
         });
         
         if (streamResult.success) {
-          console.log('✅ OpenRouter GPT-4o streaming successful');
+          console.log('✅ OpenRouter GPT streaming successful');
         }
       } catch (streamError) {
-        console.log('❌ OpenRouter GPT-4o streaming error:', streamError.message);
+        console.log('❌ OpenRouter GPT streaming error:', streamError.message);
       }
     });
   });
@@ -352,7 +352,7 @@ describe('LLM Providers - Individual Testing', function() {
     
     it('should initialize with correct configuration', function() {
       assert(provider, 'Provider should be created');
-      assert.strictEqual(provider.config.model, 'google/gemini-2.5-flash', 'Should use gemini-2.5-flash model');
+      assert.strictEqual(provider.config.model, 'google/gemini-3.5-flash', 'Should use gemini-3.5-flash model');
       assert.strictEqual(provider.config.apiUrl, 'https://openrouter.ai/api/v1/chat/completions', 'Should use OpenRouter API URL');
       assert(provider.apiKey, 'Should have API key');
       console.log('📋 OpenRouter Gemini Config:', {
@@ -493,7 +493,7 @@ describe('LLM Providers - Individual Testing', function() {
       
       if (testConfig.OPENAI_API_KEY) availableProviders.push('openai');
       if (testConfig.OPENROUTER_API_KEY) {
-        availableProviders.push('openrouter-gpt4o', 'openrouter-gemini');
+        availableProviders.push('openrouter-gpt', 'openrouter-gemini');
       }
       if (testConfig.ARK_API_KEY) availableProviders.push('ark');
       

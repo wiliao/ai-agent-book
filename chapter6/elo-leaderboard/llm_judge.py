@@ -12,7 +12,7 @@ Two backends are supported, selected automatically or via ``backend=``:
     ``https://openrouter.ai/api/v1`` with ``OPENROUTER_API_KEY``. Internal
     Claude ids (e.g. ``claude-opus-4-8``) are mapped to their OpenRouter ids
     (``anthropic/claude-opus-4.8``); ids that already contain a ``/`` such as
-    ``openai/gpt-4o-mini`` are passed through untouched. This lets the judge run
+    ``openai/gpt-5.6-luna`` are passed through untouched. This lets the judge run
     when a direct Anthropic key is missing or invalid.
 
 The two backends are interchangeable: the position-bias swap-and-agree logic and
@@ -46,7 +46,7 @@ DEFAULT_PROMPTS = [
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 # Map internal Claude ids -> OpenRouter model ids. Any id already containing a
-# '/' (e.g. 'openai/gpt-4o-mini') is treated as a native OpenRouter id and used
+# '/' (e.g. 'openai/gpt-5.6-luna') is treated as a native OpenRouter id and used
 # verbatim; unknown ids are also passed through unchanged.
 _OPENROUTER_MODEL_MAP = {
     "claude-opus-4-8": "anthropic/claude-opus-4.8",

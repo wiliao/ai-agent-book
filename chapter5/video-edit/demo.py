@@ -71,9 +71,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
                    help="剪辑后端：auto=装了 Blender 用 bpy 否则 ffmpeg；"
                         "blender=强制 Blender Python API；ffmpeg=强制 ffmpeg（默认 auto）")
     p.add_argument("--text-model", metavar="NAME", default=None,
-                   help="覆盖文本模型（否则用 $TEXT_MODEL，默认 gpt-4o）")
+                   help="覆盖文本模型（否则用 $TEXT_MODEL，默认 gpt-5.6-luna）")
     p.add_argument("--vision-model", metavar="NAME", default=None,
-                   help="覆盖视觉模型，须支持图像输入（否则用 $VISION_MODEL，默认 gpt-4o）")
+                   help="覆盖视觉模型，须支持图像输入（否则用 $VISION_MODEL，默认 gpt-5.6-luna）")
     p.add_argument("--quick", action="store_true",
                    help="快速模式：粗采样（15s/2s）+ 单轮审查，减少 Vision API 调用")
     p.add_argument("--max-rounds", type=int, default=MAX_ROUNDS, metavar="N",

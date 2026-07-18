@@ -24,7 +24,7 @@
     python demo.py --mode pure           # 只跑纯思考
     python demo.py --limit 4             # 只跑前 4 题(省钱冒烟测试)
     python demo.py --max-people 3        # 只跑不超过 3 人的谜题(按难度筛选)
-    python demo.py --model gpt-4o-mini   # 指定模型
+    python demo.py --model gpt-5.6-luna   # 指定模型
     python demo.py --puzzles my.json     # 换一份谜题数据集
 """
 import argparse

@@ -35,17 +35,17 @@ const testConfig = {
   LLM_PROVIDERS: {
     openai: {
       apiUrl: 'https://api.openai.com/v1/chat/completions',
-      model: 'gpt-4o',
+      model: 'gpt-5.6-luna',
       apiKey: 'OPENAI_API_KEY'
     },
-    'openrouter-gpt4o': {
+    'openrouter-gpt': {
       apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
-      model: 'openai/gpt-4o',
+      model: 'openai/gpt-5.6-luna',
       apiKey: 'OPENROUTER_API_KEY'
     },
     'openrouter-gemini': {
       apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
-      model: 'google/gemini-2.5-flash',
+      model: 'google/gemini-3.5-flash',
       apiKey: 'OPENROUTER_API_KEY'
     },
     ark: {
@@ -177,7 +177,7 @@ describe('ASR Provider Tests', function() {
 describe('LLM Provider Tests', function() {
   this.timeout(60000); // 60 second timeout for API calls
   
-  const llmProviders = ['openai', 'openrouter-gpt4o', 'openrouter-gemini', 'ark'];
+  const llmProviders = ['openai', 'openrouter-gpt', 'openrouter-gemini', 'ark'];
   const testMessages = [
     { role: 'system', content: 'You are a helpful AI assistant.' },
     { role: 'user', content: 'Hello! Please respond with a short greeting.' }
@@ -272,11 +272,11 @@ describe('Provider Integration Tests', function() {
   
   const testCombinations = [
     { asr: 'openai', llm: 'openai', description: 'OpenAI ASR + OpenAI LLM' },
-    { asr: 'openai', llm: 'openrouter-gpt4o', description: 'OpenAI ASR + OpenRouter GPT-4o' },
+    { asr: 'openai', llm: 'openrouter-gpt', description: 'OpenAI ASR + OpenRouter GPT' },
     { asr: 'openai', llm: 'openrouter-gemini', description: 'OpenAI ASR + OpenRouter Gemini' },
     { asr: 'openai', llm: 'ark', description: 'OpenAI ASR + ARK Doubao' },
     { asr: 'siliconflow', llm: 'openai', description: 'SenseVoice ASR + OpenAI LLM' },
-    { asr: 'siliconflow', llm: 'openrouter-gpt4o', description: 'SenseVoice ASR + OpenRouter GPT-4o' },
+    { asr: 'siliconflow', llm: 'openrouter-gpt', description: 'SenseVoice ASR + OpenRouter GPT' },
     { asr: 'siliconflow', llm: 'openrouter-gemini', description: 'SenseVoice ASR + OpenRouter Gemini' },
     { asr: 'siliconflow', llm: 'ark', description: 'SenseVoice ASR + ARK Doubao' }
   ];

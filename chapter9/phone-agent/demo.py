@@ -71,7 +71,7 @@ def parse_args() -> argparse.Namespace:
                "  python demo.py                       # 书中默认的宽带账单任务（需 OPENAI_API_KEY）\n"
                "  python demo.py --dry-run             # 完全离线：脚本化 ReAct 轨迹，无需任何 API Key\n"
                "  python demo.py --task \"帮我打电话给餐厅订今晚 7 点 4 人的位子\" --phone 021-8888\n"
-               "  python demo.py --model gpt-4o        # 覆盖模型",
+               "  python demo.py --model gpt-5.6-luna        # 覆盖模型",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     p.add_argument("--task", default=_DEFAULT_TASK,
@@ -81,7 +81,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--goal", default=None, metavar="目标",
                    help="可选：明确的通话目标。给定时作为已知信息交给 Agent（dry-run 下直接用作通话目标）。")
     p.add_argument("--model", default=None, metavar="模型",
-                   help="可选：覆盖使用的模型（默认取环境变量 OPENAI_MODEL，即 gpt-4o-mini）。")
+                   help="可选：覆盖使用的模型（默认取环境变量 OPENAI_MODEL，即 gpt-5.6-luna）。")
     p.add_argument("--dry-run", action="store_true",
                    help="离线脚本模式：不联网、不需要任何 API Key，仅演示 ReAct 循环与数据契约的形状。")
     return p.parse_args()

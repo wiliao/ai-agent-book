@@ -284,7 +284,7 @@ def dry_run(paper_path: str):
           f"（启发式打分 {last_review['overall_score']}）。")
     print(f"真实渲染 PNG：slidev_workspace/exports/dryrun_round*/")
     print(f"脚本化 slides.md 与审查 JSON：{OUT_DIR}/dryrun_round*")
-    print("真实的 Vision 审查循环（gpt-4o 看像素）请运行：python demo.py --mode dual --max-rounds 3")
+    print("真实的 Vision 审查循环（gpt-5.6-luna 看像素）请运行：python demo.py --mode dual --max-rounds 3")
 
 
 def parse_args(argv=None):
@@ -298,7 +298,7 @@ def parse_args(argv=None):
             "  python demo.py --mode dual              # 只跑双 Agent（省一半时间/费用）\n"
             "  python demo.py --max-rounds 1           # 每种方案只出首版（最快的真实 LLM 冒烟）\n"
             "  python demo.py --paper my.md --out-dir run1   # 换论文、换输出目录\n"
-            "  python demo.py --vision-model gpt-4o-mini      # 覆盖视觉模型\n"
+            "  python demo.py --vision-model gpt-5.6-luna      # 覆盖视觉模型\n"
             "  python demo.py --dry-run                # 离线走通提议者-审核者循环，不调用任何 LLM\n"
             "  python demo.py --smoke                  # 仅验证 Slidev 渲染，不调用任何 LLM\n\n"
             "模型/供应商也可通过环境变量配置（见 env.example）；命令行 --text-model /\n"

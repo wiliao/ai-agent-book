@@ -21,7 +21,7 @@ from openai import OpenAI
 from airline_env import AirlineEnv
 
 
-MODEL = os.environ.get("MODEL", "gpt-4o-mini")  # 默认用小模型作为代表（本实验的核心：小模型+代码化规则）
+MODEL = os.environ.get("MODEL", "gpt-5.6-luna")  # 默认用小模型作为代表（本实验的核心：小模型+代码化规则）
 MAX_TURNS = 6
 
 # --- 通用 OpenRouter 兜底 ---

@@ -12,7 +12,7 @@
   了真正的 Step-Audio R1，把服务地址写入 STEP_AUDIO_ENDPOINT 即可切换到它。
 
 - 级联（CascadedSpeechModel）：把 ASR → LLM → TTS 三个独立模型串成流水线，
-  一棒接一棒。可用 OpenAI 的 whisper-1 / gpt-4o-mini / tts-1 真实跑通完整闭环。
+  一棒接一棒。可用 OpenAI 的 whisper-1 / gpt-5.6-luna / tts-1 真实跑通完整闭环。
   代价：模型间以离散文本接口相连，说话人的情绪、语气、语调等副语言信息在交接时
   几乎损失殆尽（见 chapter9.md 范式二 · 端到端全模态模型）。这一路在 demo 中作为
   与端到端对照的**基线**。

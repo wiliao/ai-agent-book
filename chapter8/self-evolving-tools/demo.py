@@ -17,7 +17,7 @@
     python demo.py --offline       # 离线机制自检（无需 API/网络），演示完整进化闭环
     python demo.py --task "查询比特币当前美元价格及24小时涨跌幅"   # 自定义任务（可多次）
     python demo.py --no-create     # 禁用造工具能力（对照：只能复用/无法进化）
-    python demo.py --model gpt-4o --output run.json   # 覆盖模型并把结果写入 JSON
+    python demo.py --model gpt-5.6-luna --output run.json   # 覆盖模型并把结果写入 JSON
     python demo.py --help          # 查看全部参数
 
 提示：工具库会持久化到 tool_library/。若上一轮已封装出 get_stock_price，再次直接运行时
@@ -256,7 +256,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-create", dest="allow_create", action="store_false",
                    help="禁用『造工具(create_tool)』能力，用于对照演示（默认允许造工具）。")
     p.add_argument("--model", metavar="模型名", default=None,
-                   help="覆盖 LLM 模型名（优先级高于 LLM_MODEL 环境变量），如 gpt-4o。")
+                   help="覆盖 LLM 模型名（优先级高于 LLM_MODEL 环境变量），如 gpt-5.6-luna。")
     p.add_argument("--output", metavar="路径", default=None,
                    help="把本次运行的任务、答案、动作轨迹与复用结论写入该 JSON 文件。")
     return p

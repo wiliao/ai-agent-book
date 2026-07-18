@@ -176,7 +176,7 @@ def _build_parser():
             "  python demo.py                     # 完整运行：10 个用例 × 3 份 prompt\n"
             "  python demo.py --quick             # 每组只取 2 个用例，省时省钱\n"
             "  python demo.py --group boundary    # 只评测边界案例集\n"
-            "  python demo.py --rounds 5 --model gpt-4o\n"
+            "  python demo.py --rounds 5 --model gpt-5.6-luna\n"
             "  python demo.py --output output/run.json  # 把对比结果写成 JSON\n"
             "  python demo.py --dry-run           # 离线：只打印配置与用例数，不调用 API"
         ),
@@ -199,7 +199,7 @@ def _build_parser():
     )
     parser.add_argument(
         "--model", default=None, metavar="NAME",
-        help="覆盖 LLM 模型名（等价于设置环境变量 LLM_MODEL，如 gpt-4o）。",
+        help="覆盖 LLM 模型名（等价于设置环境变量 LLM_MODEL，如 gpt-5.6-luna）。",
     )
     parser.add_argument(
         "--provider", choices=("openai", "moonshot", "ark"), default=None,
