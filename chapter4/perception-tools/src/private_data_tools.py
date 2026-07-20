@@ -47,10 +47,14 @@ async def get_calendar_events(
         token_path = os.path.expanduser("~/.perception-tools/google_token.pickle")
         
         if not os.path.exists(token_path):
-            return ActionResponse(
+            action_response = ActionResponse(
                 success=False,
                 message="Google Calendar not configured. Please run setup to authenticate.",
                 metadata={"error_type": "missing_credentials"}
+            )
+            return TextContent(
+                type="text",
+                text=json.dumps(action_response.model_dump())
             )
         
         # Load credentials
@@ -168,10 +172,14 @@ async def search_notion(
         api_key = os.getenv("NOTION_API_KEY")
         
         if not api_key:
-            return ActionResponse(
+            action_response = ActionResponse(
                 success=False,
                 message="Notion API key not configured. Set NOTION_API_KEY.",
                 metadata={"error_type": "missing_credentials"}
+            )
+            return TextContent(
+                type="text",
+                text=json.dumps(action_response.model_dump())
             )
         
         notion = Client(auth=api_key)
