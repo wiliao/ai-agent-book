@@ -59,6 +59,22 @@ def _apply_one(content: str, old_str: str, new_str: str) -> tuple[str, str | Non
     return content.replace(old_str, new_str, 1), None
 
 
+def _apply_edits_from_args(working: str, args: dict) -> tuple[str, int, list, list]:
+    """Apply apply_edits tool args to working text. JSON null edits like omit ([])."""
+    edits = args.get("edits")
+    if edits is None:
+        edits = []
+    errors = []
+    applied = 0
+    for e in edits:
+        working, err = _apply_one(working, e.get("old_str", ""), e.get("new_str", ""))
+        if err:
+            errors.append(err)
+        else:
+            applied += 1
+    return working, applied, errors, edits
+
+
 def optimize_prompt(prompt_path: str, feedback: str, max_rounds: int = 3, verbose: bool = True) -> dict:
     """
     让 Coding Agent 根据 human feedback 改写 prompt_path 指向的文件（原地覆盖）。
@@ -120,17 +136,8 @@ def optimize_prompt(prompt_path: str, feedback: str, max_rounds: int = 3, verbos
             args = json.loads(tc.function.arguments or "{}")
         except json.JSONDecodeError:
             args = {}
-        edits = args.get("edits", [])
         rationale = args.get("rationale", rationale)
-
-        errors = []
-        applied = 0
-        for e in edits:
-            working, err = _apply_one(working, e.get("old_str", ""), e.get("new_str", ""))
-            if err:
-                errors.append(err)
-            else:
-                applied += 1
+        working, applied, errors, edits = _apply_edits_from_args(working, args)
 
         if verbose:
             print(f"  [round {round_idx + 1}] 提交 {len(edits)} 条编辑，成功 {applied}，失败 {len(errors)}")
